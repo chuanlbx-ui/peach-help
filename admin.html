@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>鲜桃认购 · 管理后台 — 文山州互联网协会</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hirayino Sans GB","Microsoft YaHei",sans-serif;background:#0a1628;color:#fff;min-height:100vh}
+.header{background:linear-gradient(135deg,#0a1628,#1a2a4a);padding:20px;border-bottom:1px solid rgba(255,213,79,0.15)}
+.header h1{font-size:22px;font-weight:700;color:#ffd54f}
+.header .sub{font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px}
+
+.nav{display:flex;gap:8px;padding:16px 20px;background:#0d1f3c;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav button{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;white-space:nowrap;transition:all 0.3s}
+.nav button:hover{background:rgba(255,213,79,0.1)}
+.nav button.active{background:rgba(255,213,79,0.15);border-color:#ffd54f;color:#ffd54f}
+
+.content{padding:20px;max-width:1200px;margin:0 auto}
+
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;flex:1;min-width:140px;text-align:center}
+.stat-card .num{font-size:28px;font-weight:800;color:#ffd54f}
+.stat-card .label{font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px}
+
+.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:200px;padding:12px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;font-size:15px;outline:none}
+.search-bar input:focus{border-color:#ffd54f}
+.search-bar input::placeholder{color:rgba(255,255,255,0.3)}
+
+.order-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px 20px;margin-bottom:12px;transition:all 0.3s}
+.order-card:hover{border-color:rgba(255,213,79,0.2)}
+.order-card .top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.order-card .order-id{font-family:monospace;font-size:15px;font-weight:700;color:#ffd54f}
+.order-card .status{font-size:13px;padding:3px 10px;border-radius:8px}
+.order-card .status.pending{background:rgba(255,152,0,0.15);color:#ff9800}
+.order-card .status.paid{background:rgba(76,175,80,0.15);color:#4caf50}
+.order-card .status.completed{background:rgba(33,150,243,0.15);color:#2196f3}
+.order-card .info{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:rgba(255,255,255,0.6)}
+.order-card .info span{white-space:nowrap}
+.order-card .info .label{color:rgba(255,255,255,0.4)}
+.order-card .info .val{color:#fff}
+.order-card .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+.btn-sm{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.3s}
+.btn-sm.primary{background:linear-gradient(135deg,#ffd54f,#ffa726);color:#0a1628}
+.btn-sm.primary:hover{opacity:0.9}
+.btn-sm.success{background:rgba(76,175,80,0.2);color:#4caf50;border:1px solid rgba(76,175,80,0.3)}
+.btn-sm.success:hover{background:rgba(76,175,80,0.3)}
+.btn-sm.danger{background:rgba(244,67,54,0.15);color:#f44336;border:1px solid rgba(244,67,54,0.2)}
+.btn-sm.info{background:rgba(33,150,243,0.15);color:#2196f3;border:1px solid rgba(33,150,243,0.2)}
+.btn-sm.outline{background:transparent;border:1px solid rgba(255,255,255,0.15);color:#fff}
+
+.img-thumb{width:60px;height:60px;border-radius:8px;overflow:hidden;cursor:pointer;display:inline-block;border:1px solid rgba(255,255,255,0.1)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:10000;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:linear-gradient(135deg,#1a2a4a,#0d1f3c);border:1px solid rgba(255,213,79,0.2);border-radius:20px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:20px;font-weight:700;margin-bottom:16px;color:#ffd54f}
+.modal .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.modal .row .l{color:rgba(255,255,255,0.5);font-size:14px}
+.modal .row .r{color:#fff;font-size:14px;font-weight:600;text-align:right}
+.modal .receipt-img{max-width:100%;border-radius:8px;margin:8px 0;border:1px solid rgba(255,255,255,0.1)}
+.modal .receipt-img-label{font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px}
+.modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.modal-actions button{flex:1}
+
+/* 登录页 */
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:40px 32px;max-width:400px;width:100%;text-align:center}
+.login-box h2{font-size:22px;font-weight:700;margin-bottom:8px;color:#ffd54f}
+.login-box p{color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:24px}
+.login-box input{width:100%;padding:14px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;font-size:16px;outline:none;text-align:center;margin-bottom:16px}
+.login-box input:focus{border-color:#ffd54f}
+.login-box .error{color:#f44336;font-size:14px;margin-bottom:12px;display:none}
+
+.empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.3);font-size:15px}
+
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:rgba(0,0,0,0.9);color:#fff;padding:14px 28px;border-radius:10px;font-size:15px;z-index:9999;transition:transform 0.4s ease;pointer-events:none;max-width:90vw;text-align:center;border:1px solid rgba(255,213,79,0.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* 编辑表单 */
+.edit-form{display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08)}
+.edit-form.show{display:block}
+.edit-form .field{margin-bottom:12px}
+.edit-form label{display:block;font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:4px}
+.edit-form input,.edit-form select,.edit-form textarea{width:100%;padding:10px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:14px;outline:none}
+.edit-form input:focus,.edit-form select:focus,.edit-form textarea:focus{border-color:#ffd54f}
+.edit-form textarea{resize:vertical;min-height:60px}
+.edit-form .field-row{display:flex;gap:10px}
+.edit-form .field-row .field{flex:1}
+.edit-form-actions{display:flex;gap:10px;margin-top:16px}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===== 登录页 ===== -->
+<div class="login-page" id="loginPage">
+  <div class="login-box">
+    <h2>🔐 管理后台</h2>
+    <p><a href="https://ws.aiedu.yn.cn/" target="_blank" style="color:rgba(255,255,255,0.5);text-decoration:none">鲜桃认购 · 文山州互联网协会</a></p>
+    <input type="password" id="loginPassword" placeholder="请输入管理员密码" onkeydown="if(event.key==='Enter')doLogin()" />
+    <div class="error" id="loginError">密码错误，请重试</div>
+    <button class="btn-sm primary" onclick="doLogin()" style="width:100%;padding:14px;font-size:16px">登录</button>
+  </div>
+</div>
+
+<!-- ===== 管理页 ===== -->
+<div id="adminPanel" style="display:none">
+  <div class="header">
+    <h1>🍑 鲜桃认购 · 管理后台</h1>
+    <div class="sub"><a href="https://ws.aiedu.yn.cn/" target="_blank" style="color:rgba(255,255,255,0.4);text-decoration:none">文山州互联网协会</a></div>
+  </div>
+
+  <div class="nav">
+    <button class="active" data-filter="all" onclick="switchTab('all')">📋 全部订单</button>
+    <button data-filter="pending" onclick="switchTab('pending')">⏳ 待付款</button>
+    <button data-filter="paid" onclick="switchTab('paid')">✅ 已付款</button>
+    <button data-filter="completed" onclick="switchTab('completed')">🔖 已核销</button>
+    <button onclick="showCheckin()">🔑 核销</button>
+    <button onclick="logout()" style="margin-left:auto;border-color:rgba(244,67,54,0.3);color:#f44336">退出</button>
+  </div>
+
+  <div class="content">
+    <div class="stats" id="statsRow">
+      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">总订单</div></div>
+      <div class="stat-card"><div class="num" id="statPending">0</div><div class="label">待付款</div></div>
+      <div class="stat-card"><div class="num" id="statPaid">0</div><div class="label">已付款</div></div>
+      <div class="stat-card"><div class="num" id="statCompleted">0</div><div class="label">已核销</div></div>
+      <div class="stat-card"><div class="num" id="statJin">0</div><div class="label">总斤数</div></div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="🔍 搜索姓名/手机号/订单号" oninput="renderOrders()" />
+    </div>
+
+    <!-- 核销面板 -->
+    <div id="checkinPanel" style="display:none;background:rgba(255,213,79,0.04);border:1px solid rgba(255,213,79,0.15);border-radius:12px;padding:24px;margin-bottom:20px;text-align:center">
+      <h3 style="font-size:18px;font-weight:700;color:#ffd54f;margin-bottom:12px">🔑 核销订单</h3>
+      <p style="font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:16px">输入用户出示的核销码（格式：PTxxxx）</p>
+      <div style="display:flex;gap:10px;max-width:400px;margin:0 auto">
+        <input type="text" id="checkinInput" placeholder="输入核销码，如 PT1234" style="flex:1;padding:14px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;font-size:18px;outline:none;text-align:center;text-transform:uppercase;letter-spacing:4px" onkeydown="if(event.key==='Enter')doCheckin()" />
+        <button class="btn-sm success" onclick="doCheckin()" style="padding:14px 24px;font-size:16px">核销</button>
+      </div>
+      <div id="checkinResult" style="margin-top:12px;font-size:15px"></div>
+    </div>
+
+    <div id="orderList"></div>
+  </div>
+</div>
+
+<!-- ===== 订单详情弹窗 ===== -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <h3>📄 订单详情</h3>
+    <div id="detailContent"></div>
+    <!-- 编辑表单 -->
+    <div class="edit-form" id="editForm">
+      <h4 style="font-size:15px;font-weight:700;color:#ffd54f;margin-bottom:12px">✏️ 编辑订单</h4>
+      <div class="field">
+        <label>姓名</label>
+        <input type="text" id="editName" />
+      </div>
+      <div class="field">
+        <label>电话</label>
+        <input type="text" id="editPhone" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>份数</label>
+          <select id="editQuantity"></select>
+        </div>
+        <div class="field">
+          <label>金额 (¥)</label>
+          <input type="number" id="editAmount" step="0.01" />
+        </div>
+      </div>
+      <div class="field">
+        <label>配送方式</label>
+        <select id="editDelivery">
+          <option value="pickup">到店自提</option>
+          <option value="uupt">UU跑腿配送</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>备注</label>
+        <textarea id="editNote" rows="3"></textarea>
+      </div>
+      <div class="edit-form-actions">
+        <button class="btn-sm success" onclick="saveOrderEdit()" style="flex:1">💾 保存</button>
+        <button class="btn-sm outline" onclick="cancelOrderEdit()" style="flex:1">取消</button>
+      </div>
+      <p id="editFormStatus" style="font-size:13px;margin-top:8px;text-align:center"></p>
+    </div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08)" id="detailUploadSection">
+      <div style="font-size:14px;font-weight:600;color:#ffd54f;margin-bottom:8px">📷 代上传支付凭证</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="file" accept="image/*" id="detailUploadInput" style="flex:1;padding:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:13px" />
+        <button class="btn-sm success" id="detailUploadBtn" onclick="doAdminUpload()" style="white-space:nowrap">上传</button>
+      </div>
+      <p id="detailUploadStatus" style="font-size:13px;margin-top:6px"></p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm outline" onclick="toggleOrderEdit()" style="flex:1">✏️ 编辑</button>
+      <button class="btn-sm primary" onclick="closeDetail()" style="flex:1">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let token = '';
+let orders = [];
+let currentTab = 'all';
+
+function showToast(msg){
+  let t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ===== 登录 =====
+async function doLogin(){
+  let pwd = document.getElementById('loginPassword').value;
+  if(!pwd){ showToast('请输入密码'); return; }
+  token = btoa('admin:' + pwd);
+  let res = await fetch('/api/peach-order/admin/check', {headers:{'Authorization':'Basic '+token}});
+  let data = await res.json();
+  if(data.ok){
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('loginError').style.display = 'none';
+    loadData();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    token = '';
+  }
+}
+
+function logout(){
+  token = ''; orders = [];
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('loginPassword').value = '';
+}
+
+// ===== 加载数据 =====
+async function loadData(){
+  if(!token) return;
+  try {
+    let r = await fetch('/api/peach-order/orders', {headers:{'Authorization':'Basic '+token}});
+    if(r.status === 401){ logout(); return; }
+    orders = await r.json();
+    renderAll();
+  } catch(e){ showToast('加载失败'); }
+}
+
+function getStats(){
+  let total=orders.length, pending=0, paid=0, completed=0, jin=0;
+  orders.forEach(o => {
+    let s = o.status || 'pending';
+    if(s === 'pending') pending++;
+    else if(s === 'paid' || s === 'completed') paid++;
+    if(s === 'completed') completed++;
+    jin += o.total_jin || 0;
+  });
+  // completed also counted in paid, so adjust
+  paid = paid - completed; // 已付款未核销
+  return {total, pending, paid, completed, jin};
+}
+
+function renderAll(){
+  let s = getStats();
+  document.getElementById('statTotal').textContent = s.total;
+  document.getElementById('statPending').textContent = s.pending;
+  document.getElementById('statPaid').textContent = s.paid;
+  document.getElementById('statCompleted').textContent = s.completed;
+  document.getElementById('statJin').textContent = s.jin;
+  renderOrders();
+}
+
+// ===== 选项卡 =====
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.nav button[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === tab));
+  document.getElementById('checkinPanel').style.display = 'none';
+  renderOrders();
+}
+
+function showCheckin(){
+  document.getElementById('checkinPanel').style.display = 'block';
+  document.getElementById('checkinResult').textContent = '';
+  document.getElementById('checkinInput').value = '';
+  document.getElementById('checkinInput').focus();
+}
+
+// ===== 渲染订单列表 =====
+function renderOrders(){
+  let list = document.getElementById('orderList');
+  let search = document.getElementById('searchInput').value.trim().toLowerCase();
+  let filtered = orders.filter(o => {
+    if(currentTab !== 'all' && o.status !== currentTab) return false;
+    if(search && !o.name.toLowerCase().includes(search) && !o.phone.includes(search) && !o.order_id.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty">暂无订单</div>';
+    return;
+  }
+
+  let statusMap = {pending:'⏳ 待付款', paid:'✅ 已付款', completed:'🔖 已核销'};
+  let deliveryMap = {pickup:'到店自提', uupt:'UU跑腿配送'};
+
+  list.innerHTML = filtered.map(o => {
+    let s = o.status || 'pending';
+    let hasReceipt = o.receipt_peach || o.receipt_delivery;
+
+    return `<div class="order-card">
+      <div class="top">
+        <span class="order-id">${o.order_id}</span>
+        <span class="status ${s}">${statusMap[s] || s}</span>
+      </div>
+      <div class="info">
+        <span><span class="label">姓名</span> <span class="val">${o.name}</span></span>
+        <span><span class="label">电话</span> <span class="val">${o.phone}</span></span>
+        <span><span class="label">数量</span> <span class="val">${o.quantity}份（${o.total_jin}斤）</span></span>
+        <span><span class="label">金额</span> <span class="val">¥${o.amount}</span></span>
+        <span><span class="label">配送</span> <span class="val">${deliveryMap[o.delivery_type]||o.delivery_type}</span></span>
+        ${o.delivery_type==='uupt' && o.delivery_address ? `<span><span class="label">地址</span> <span class="val">${o.delivery_address}</span></span>` : ''}
+        <span><span class="label">创建</span> <span class="val">${o.created_at ? o.created_at.slice(0,16) : ''}</span></span>
+        ${o.note ? `<span><span class="label">备注</span> <span class="val">${o.note}</span></span>` : ''}
+      </div>
+      <div class="actions">
+        <button class="btn-sm outline" onclick="showDetail('${o.order_id}')">📋 详情</button>
+        <select class="status-select" onchange="changeOrderStatus('${o.order_id}', this.value)" style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;font-size:13px;cursor:pointer;outline:none">
+          <option value="">⚙️ 改状态</option>
+          <option value="pending">⏳ 待支付</option>
+          <option value="paid">✅ 已付款</option>
+          <option value="completed">🔖 已核销</option>
+        </select>
+        <button class="btn-sm info" onclick="adminUploadReceipt('${o.order_id}')">📷 代上传凭证</button>
+        ${s === 'pending' && hasReceipt ? `<button class="btn-sm success" onclick="confirmPay('${o.order_id}')">✅ 确认付款</button>` : ''}
+        ${s === 'paid' ? `<button class="btn-sm info" onclick="showCheckinWithOrder('${o.order_id}')">🔑 核销</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== 订单详情 =====
+async function showDetail(orderId){
+  let o = orders.find(x => x.order_id === orderId);
+  if(!o) return;
+  let deliveryMap = {pickup:'到店自提', uupt:'UU跑腿配送'};
+  let statusMap = {pending:'⏳ 待付款', paid:'✅ 已付款', completed:'🔖 已核销'};
+  let checkinCode = generateCC(o.order_id);
+
+  let html = `
+    <div class="row"><span class="l">订单号</span><span class="r" style="color:#ffd54f">${o.order_id}</span></div>
+    <div class="row"><span class="l">姓名</span><span class="r">${o.name}</span></div>
+    <div class="row"><span class="l">电话</span><span class="r">${o.phone}</span></div>
+    <div class="row"><span class="l">认购份数</span><span class="r">${o.quantity}份（${o.total_jin}斤）</span></div>
+    <div class="row"><span class="l">金额</span><span class="r" style="color:#ffd54f">¥${o.amount}</span></div>
+    <div class="row"><span class="l">配送方式</span><span class="r">${deliveryMap[o.delivery_type]||o.delivery_type}</span></div>
+    ${o.delivery_type==='uupt' ? `<div class="row"><span class="l">配送地址</span><span class="r">${o.delivery_address||'-'}</span></div><div class="row"><span class="l">配送费</span><span class="r">¥${o.delivery_fee||0}</span></div>` : ''}
+    <div class="row"><span class="l">提货点</span><span class="r">${o.pickup}</span></div>
+    <div class="row"><span class="l">状态</span><span class="r">${statusMap[o.status]||o.status}</span></div>
+    <div class="row"><span class="l">核销码</span><span class="r" style="color:#ffd54f;font-family:monospace;font-size:18px;letter-spacing:4px">${checkinCode}</span></div>
+    ${o.note ? `<div class="row"><span class="l">备注</span><span class="r">${o.note}</span></div>` : ''}
+    <div class="row"><span class="l">创建时间</span><span class="r">${o.created_at||'-'}</span></div>
+    ${o.paid_at ? `<div class="row"><span class="l">付款时间</span><span class="r">${o.paid_at}</span></div>` : ''}
+    ${o.checked_in_at ? `<div class="row"><span class="l">核销时间</span><span class="r">${o.checked_in_at}</span></div>` : ''}
+  `;
+
+  // 支付凭证图片
+  let hasReceipt = o.receipt_peach || o.receipt_delivery;
+  if(hasReceipt){
+    html += `<div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px">`;
+    if(o.receipt_peach){
+      let filename = o.receipt_peach.split('/').pop();
+      html += `<div class="receipt-img-label">📷 桃子钱支付凭证：</div><img class="receipt-img" src="/peach-help/receipts/${filename}" onerror="this.style.display='none'" />`;
+    }
+    if(o.receipt_delivery){
+      let filename = o.receipt_delivery.split('/').pop();
+      html += `<div class="receipt-img-label" style="margin-top:8px">📷 配送费支付凭证：</div><img class="receipt-img" src="/peach-help/receipts/${filename}" onerror="this.style.display='none'" />`;
+    }
+    html += `</div>`;
+  }
+
+  document.getElementById('detailContent').innerHTML = html;
+  editOrderId = orderId;
+  document.getElementById('editForm').classList.remove('show');
+  document.getElementById('editFormStatus').textContent = '';
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeDetail(){
+  document.getElementById('detailModal').classList.remove('show');
+}
+
+// ===== 确认付款 =====
+async function confirmPay(orderId){
+  if(!confirm(`确认订单 ${orderId} 已付款？`)) return;
+  let r = await fetch('/api/peach-order/confirm', {
+    method:'POST',
+    headers:{'Content-Type':'application/json', 'Authorization':'Basic '+token},
+    body:JSON.stringify({order_id: orderId})
+  });
+  let data = await r.json();
+  if(data.ok){ showToast('✅ 已确认付款'); loadData(); }
+  else showToast('操作失败');
+}
+
+// ===== 核销 =====
+function showCheckinWithOrder(orderId){
+  let o = orders.find(x => x.order_id === orderId);
+  let code = o ? generateCC(o.order_id) : '';
+  document.getElementById('checkinPanel').style.display = 'block';
+  document.getElementById('checkinInput').value = code;
+  document.getElementById('checkinInput').focus();
+}
+
+async function doCheckin(){
+  let code = document.getElementById('checkinInput').value.trim().toUpperCase();
+  if(!code || code.length < 4){ showToast('请输入有效的核销码'); return; }
+  if(!confirm(`确认核销「${code}」？此操作不可撤销。`)) return;
+
+  let r = await fetch('/api/peach-order/checkin', {
+    method:'POST',
+    headers:{'Content-Type':'application/json', 'Authorization':'Basic '+token},
+    body:JSON.stringify({code})
+  });
+  let data = await r.json();
+  let resultEl = document.getElementById('checkinResult');
+  if(data.ok){
+    let deliveryMap = {pickup:'到店自提', uupt:'UU跑腿配送'};
+    resultEl.innerHTML = `<div style="color:#4caf50;font-weight:700;font-size:18px">✅ 核销成功！</div>
+      <div style="margin-top:8px;color:rgba(255,255,255,0.6);font-size:14px">
+        ${data.order.name} · ${data.order.phone}<br>
+        ${data.order.quantity}份（${data.order.total_jin}斤）· ${deliveryMap[data.order.delivery_type]||data.order.delivery_type}
+      </div>`;
+    document.getElementById('checkinInput').value = '';
+    loadData();
+    setTimeout(()=>{document.getElementById('checkinInput').focus();}, 300);
+  } else {
+    resultEl.innerHTML = `<div style="color:#f44336;font-weight:600">❌ ${data.error}</div>`;
+  }
+}
+
+// ===== 核销码生成（与后端一致） =====
+function generateCC(orderId){
+  let raw = orderId + 'PEACH2026';
+  let h = 0;
+  for(let i=0; i<raw.length; i++){ h = ((h << 5) - h) + raw.charCodeAt(i); h &= 0x7fffffff; }
+  return 'PT' + String(h).slice(0,4);
+}
+
+// ===== 管理员更改订单状态 =====
+async function changeOrderStatus(orderId, newStatus){
+  if(!newStatus) return;
+  let label = {pending:'⏳ 待支付', paid:'✅ 已付款', completed:'🔖 已核销'};
+  if(!confirm(`确认将 ${orderId} 状态改为「${label[newStatus]}」？`)) return;
+  let r = await fetch('/api/peach-order/update-status', {
+    method:'POST',
+    headers:{'Content-Type':'application/json', 'Authorization':'Basic '+token},
+    body:JSON.stringify({order_id: orderId, status: newStatus})
+  });
+  let data = await r.json();
+  if(data.ok){ showToast('✅ 状态已更新'); loadData(); }
+  else showToast('❌ 操作失败：' + (data.error||''));
+}
+
+// ===== 管理员代上传凭证（从卡片按钮） =====
+let currentUploadOrderId = '';
+function adminUploadReceipt(orderId){
+  currentUploadOrderId = orderId;
+  // 用原生 input 触发文件选择
+  let input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = function(e){
+    let file = e.target.files[0];
+    if(!file){ showToast('未选择文件'); return; }
+    let form = new FormData();
+    form.append('order_id', orderId);
+    form.append('receipt_type', 'peach');
+    form.append('file', file);
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/peach-order/upload');
+    xhr.setRequestHeader('Authorization', 'Basic '+token);
+    xhr.onload = function(){
+      if(xhr.status === 200){ showToast('✅ 凭证已上传'); loadData(); }
+      else showToast('❌ 上传失败');
+    };
+    xhr.onerror = function(){ showToast('❌ 网络错误'); };
+    xhr.send(form);
+  };
+  input.click();
+}
+
+// ===== 管理员代上传凭证（从详情弹窗） =====
+function doAdminUpload(){
+  let input = document.getElementById('detailUploadInput');
+  let file = input.files[0];
+  if(!file){ showToast('请先选择文件'); return; }
+  let oid = document.querySelector('#detailContent .row:first-child .r')?.textContent || currentUploadOrderId;
+  let form = new FormData();
+  form.append('order_id', oid);
+  form.append('receipt_type', 'peach');
+  form.append('file', file);
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/peach-order/upload');
+  xhr.setRequestHeader('Authorization', 'Basic '+token);
+  xhr.onload = function(){
+    if(xhr.status === 200){
+      document.getElementById('detailUploadStatus').textContent = '✅ 凭证已上传成功';
+      document.getElementById('detailUploadStatus').style.color = '#4caf50';
+      input.value = '';
+      loadData();
+    } else {
+      document.getElementById('detailUploadStatus').textContent = '❌ 上传失败';
+      document.getElementById('detailUploadStatus').style.color = '#f44336';
+    }
+  };
+  xhr.onerror = function(){
+    document.getElementById('detailUploadStatus').textContent = '❌ 网络错误';
+    document.getElementById('detailUploadStatus').style.color = '#f44336';
+  };
+  xhr.send(form);
+}
+
+// ===== 编辑订单 =====
+let editOrderId = '';
+
+// 初始化份数下拉
+(function(){
+  let sel = document.getElementById('editQuantity');
+  for(let i=1; i<=50; i++){
+    let opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = i + ' 份';
+    sel.appendChild(opt);
+  }
+})();
+
+function fillEditForm(o){
+  document.getElementById('editName').value = o.name || '';
+  document.getElementById('editPhone').value = o.phone || '';
+  document.getElementById('editQuantity').value = o.quantity || 1;
+  document.getElementById('editAmount').value = o.amount || 0;
+  document.getElementById('editDelivery').value = o.delivery_type || 'pickup';
+  document.getElementById('editNote').value = o.note || '';
+}
+
+function toggleOrderEdit(){
+  let form = document.getElementById('editForm');
+  let showing = form.classList.contains('show');
+  if(showing){
+    form.classList.remove('show');
+  } else {
+    let o = orders.find(x => x.order_id === editOrderId);
+    if(o) fillEditForm(o);
+    document.getElementById('editFormStatus').textContent = '';
+    form.classList.add('show');
+  }
+}
+
+function cancelOrderEdit(){
+  document.getElementById('editForm').classList.remove('show');
+  document.getElementById('editFormStatus').textContent = '';
+}
+
+async function saveOrderEdit(){
+  let oid = editOrderId;
+  if(!oid){ showToast('❌ 订单号缺失'); return; }
+  let body = {
+    order_id: oid,
+    name: document.getElementById('editName').value.trim(),
+    phone: document.getElementById('editPhone').value.trim(),
+    quantity: parseInt(document.getElementById('editQuantity').value),
+    amount: parseFloat(document.getElementById('editAmount').value) || 0,
+    delivery_type: document.getElementById('editDelivery').value,
+    note: document.getElementById('editNote').value.trim()
+  };
+  if(!body.name || !body.phone){
+    document.getElementById('editFormStatus').textContent = '❌ 请填写姓名和电话';
+    document.getElementById('editFormStatus').style.color = '#f44336';
+    return;
+  }
+  document.getElementById('editFormStatus').textContent = '⏳ 保存中...';
+  document.getElementById('editFormStatus').style.color = '#ffd54f';
+  try {
+    let r = await fetch('/api/peach-order/update-order', {
+      method:'POST',
+      headers:{'Content-Type':'application/json', 'Authorization':'Basic '+token},
+      body:JSON.stringify(body)
+    });
+    let data = await r.json();
+    if(data.ok){
+      document.getElementById('editFormStatus').textContent = '✅ 保存成功';
+      document.getElementById('editFormStatus').style.color = '#4caf50';
+      document.getElementById('editForm').classList.remove('show');
+      showToast('✅ 订单已更新');
+      loadData();
+    } else {
+      document.getElementById('editFormStatus').textContent = '❌ ' + (data.error||'保存失败');
+      document.getElementById('editFormStatus').style.color = '#f44336';
+    }
+  } catch(e){
+    document.getElementById('editFormStatus').textContent = '❌ 网络错误';
+    document.getElementById('editFormStatus').style.color = '#f44336';
+  }
+}
+
+// ===== 自动刷新 =====
+setInterval(() => { if(token) loadData(); }, 15000);
+</script>
+</body>
+</html>
